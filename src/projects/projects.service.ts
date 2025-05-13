@@ -10,6 +10,8 @@ export class ProjectsService {
   ) { }
 
   async create(createProjectDto: CreateProjectDto) {
+    // TODO: verificar se ja existe um projeto com o mesmo nome
+
     return await this.prisma.project.create({ data: createProjectDto });
   }
 
@@ -31,8 +33,17 @@ export class ProjectsService {
     return foundProject;
   }
 
-  update(id: number, updateProjectDto: UpdateProjectDto) {
-    return `This action updates a #${id} project`;
+  async update(id: number, updateProjectDto: UpdateProjectDto) {
+    await this.findOne(id);
+
+    // TODO: verificar se ja existe um projeto com o mesmo nome
+
+    const result = await this.prisma.project.update({
+      where: { id },
+      data: updateProjectDto
+    });
+
+    return result;
   }
 
   remove(id: number) {

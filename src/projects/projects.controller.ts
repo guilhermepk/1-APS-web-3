@@ -19,12 +19,12 @@ export class ProjectsController {
 
   @Get('find-by-id/:id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.projectsService.findOne(id);
+    return await this.projectsService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateProjectDto: UpdateProjectDto) {
-    return this.projectsService.update(+id, updateProjectDto);
+  @Patch('update/:id')
+  async update(@Param('id', ParseIntPipe) id: number, @Body() updateProjectDto: UpdateProjectDto) {
+    return await this.projectsService.update(id, updateProjectDto);
   }
 
   @Delete(':id')
