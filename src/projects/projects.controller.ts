@@ -8,13 +8,13 @@ export class ProjectsController {
   constructor(private readonly projectsService: ProjectsService) { }
 
   @Post('create')
-  create(@Body() createProjectDto: CreateProjectDto) {
-    return this.projectsService.create(createProjectDto);
+  async create(@Body() createProjectDto: CreateProjectDto) {
+    return await this.projectsService.create(createProjectDto);
   }
 
-  @Get()
-  findAll() {
-    return this.projectsService.findAll();
+  @Get('find-all')
+  async findAll() {
+    return await this.projectsService.findAll();
   }
 
   @Get(':id')

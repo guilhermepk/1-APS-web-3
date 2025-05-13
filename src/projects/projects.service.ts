@@ -13,8 +13,8 @@ export class ProjectsService {
     return await this.prisma.project.create({ data: createProjectDto });
   }
 
-  findAll() {
-    return `This action returns all projects`;
+  async findAll() {
+    return await this.prisma.project.findMany();
   }
 
   findOne(id: number) {
