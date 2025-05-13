@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -9,8 +9,16 @@ export class ProjectsService {
     private readonly prisma: PrismaService
   ) { }
 
+  async verifyIfNameIsUsed(name: string): Promise<void> {
+    const foundProject = await this.prisma.project.findUnique({
+      where: { name }
+    });
+
+    if (foundProject) throw new ForbiddenException(`Já existe um projeto com o nome ${name}`);
+  }
+
   async create(createProjectDto: CreateProjectDto) {
-    // TODO: verificar se ja existe um projeto com o mesmo nome
+    await this.verifyIfNameIsUsed(createProjectDto.name);
 
     return await this.prisma.project.create({ data: createProjectDto });
   }
@@ -34,9 +42,11 @@ export class ProjectsService {
   }
 
   async update(id: number, updateProjectDto: UpdateProjectDto) {
+    if (Object.values(updateProjectDto).length < 1) throw new BadRequestException('Ao menos alguma informação deve ser enviada para a atualização');
+
     await this.findOne(id);
 
-    // TODO: verificar se ja existe um projeto com o mesmo nome
+    if (updateProjectDto.name) await this.verifyIfNameIsUsed(updateProjectDto.name);
 
     const result = await this.prisma.project.update({
       where: { id },
@@ -46,7 +56,15 @@ export class ProjectsService {
     return result;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} project`;
+  async remove(id: number) {
+    await this.findOne(id);
+
+    const result = await this.prisma.project.delete({
+      where: { id }
+    });
+
+    if (!result) throw new UnprocessableEntityException(`Não foi possível deletar o projteo ${id}`);
+
+    return { message: `Projeto ${id} deletado com sucesso` };
   }
 }

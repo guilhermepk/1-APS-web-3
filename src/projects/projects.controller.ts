@@ -27,8 +27,8 @@ export class ProjectsController {
     return await this.projectsService.update(id, updateProjectDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.projectsService.remove(+id);
+  @Delete('delete/:id')
+  async remove(@Param('id', ParseIntPipe) id: number) {
+    return await this.projectsService.remove(id);
   }
 }
