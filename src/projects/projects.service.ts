@@ -54,6 +54,8 @@ export class ProjectsService {
       data: updateProjectDto
     });
 
+    if (!result) throw new UnprocessableEntityException(`Não foi possível atualizar o projeto ${id}`);
+
     return result;
   }
 
